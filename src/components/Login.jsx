@@ -1,12 +1,26 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useState } from 'react'
+import { backendUrl } from '../App'
+import { toast } from 'react-toastify'
 
-const Login = () => {
+const Login = ({setToken}) => {
+    const [email,setEmail] = useState('')
+    const [password,setPassword] = useState('')
 
     const onSubmitHandler = async (e) =>{
         try {
             e.preventDefault();
-        } catch (error) {
+            const response = await axios.post(backendUrl + '/api/user/admin',{email,password})
+            if(response.data.success){
+                setToken(response.data.token)
+            }else{
+                toast.error(response.data.message)
+            }
             
+            
+        } catch (error) {
+            console.log(error);
+            toast(error.message)
         }
     }
   return (
@@ -16,11 +30,11 @@ const Login = () => {
         <form onSubmit={onSubmitHandler}>
             <div className='mb-3 min-w-72'>
                 <p className='text-sm font-medium text-gray-700 mb-2'>Email</p>
-                <input className='rounded-md w-full px-3 py-2 border border-green-300 outline-none' type="email" placeholder='example@gmail.com' required />
+                <input onChange={(e)=>setEmail(e.target.value)} value={email} className='rounded-md w-full px-3 py-2 border border-green-300 outline-none' type="email" placeholder='example@gmail.com' required />
             </div>
             <div className='mb-3 min-w-72'>
                 <p className='text-sm font-medium text-gray-700 mb-2'>Password</p>
-                <input className='rounded-md w-full px-3 py-2 border border-green-300 outline-none' type="password" placeholder='Enter password' required />
+                <input onChange={(e)=>setPassword(e.target.value)} value={password} className='rounded-md w-full px-3 py-2 border border-green-300 outline-none' type="password" placeholder='Enter password' required />
             </div>
             <button className='mt-2 w-full py-2 px-4 rounded-md text-white bg-green-600' type="submit">Login</button>
         </form>
